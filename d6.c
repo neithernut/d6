@@ -29,6 +29,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+/**
+ * This program prints dice faces for random values as text. Each pixel is made
+ * up of two characters. A dice face is printed using 7x7 pixels, the dice are
+ * separated by one pixel.
+ */
+
+
 /**
  * Dice data
  *
