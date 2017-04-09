@@ -32,12 +32,18 @@
 /**
  * Dice data
  *
+ * There are nine positions for pips on each d6, which we enumerate starting
+ * form `0`:
+ *
  *     #######
  *     #0 1 2#
  *     #3 4 5#
  *     #6 7 8#
  *     #######
  *
+ * Hence, we can represent the pip-configuration of a dice using 9 bits. The
+ * six configurations for a d6 easily fit into a 64bit integer value. We even
+ * have the luxury of starting at an offset without wasting memory.
  */
 const uint64_t pips =
     ((uint64_t) 0x010) << (1*9) |
