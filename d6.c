@@ -71,11 +71,14 @@ const uint64_t pips =
 const size_t dice_row_len = 16;
 
 
+/**
+ * Write a horizontal line of pixels/characters for a dice face
+ */
 void
 set_row_pixels(
-    char* dest,
-    uint8_t row,
-    uint8_t value
+    char* dest, ///< where to write the line
+    uint8_t row, ///< row of the dice face to write
+    uint8_t value ///< value shown by the dice face
 ) {
     memset(dest, '#', 14);
 
