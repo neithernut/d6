@@ -62,6 +62,12 @@ const uint64_t pips =
     ((uint64_t) 0x16D) << (6*9);
 
 
+/**
+ * The length of a row for one dice, including the space after the dice
+ *
+ * 7 pixels for the dice face + the separating pixel, times 2 characters per
+ * pixel.
+ */
 const size_t dice_row_len = 16;
 
 
