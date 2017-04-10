@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
 
     // prepare buffer
     const size_t row_len = dice_row_len*count;
-    char* buf = malloc(row_len*7);
+    char* buf = alloca(row_len*7);
     memset(buf, ' ', row_len*7);
 
     // make it rows
