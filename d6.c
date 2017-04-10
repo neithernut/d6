@@ -29,8 +29,19 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+/**
+ * This program prints dice faces for random values as text. Each pixel is made
+ * up of two characters. A dice face is printed using 7x7 pixels, the dice are
+ * separated by one pixel.
+ */
+
+
 /**
  * Dice data
+ *
+ * There are nine positions for pips on each d6, which we enumerate starting
+ * form `0`:
  *
  *     #######
  *     #0 1 2#
@@ -38,6 +49,9 @@
  *     #6 7 8#
  *     #######
  *
+ * Hence, we can represent the pip-configuration of a dice using 9 bits. The
+ * six configurations for a d6 easily fit into a 64bit integer value. We even
+ * have the luxury of starting at an offset without wasting memory.
  */
 const uint64_t pips =
     ((uint64_t) 0x010) << (1*9) |
@@ -48,14 +62,23 @@ const uint64_t pips =
     ((uint64_t) 0x16D) << (6*9);
 
 
+/**
+ * The length of a row for one dice, including the space after the dice
+ *
+ * 7 pixels for the dice face + the separating pixel, times 2 characters per
+ * pixel.
+ */
 const size_t dice_row_len = 16;
 
 
+/**
+ * Write a horizontal line of pixels/characters for a dice face
+ */
 void
 set_row_pixels(
-    char* dest,
-    uint8_t row,
-    uint8_t value
+    char* dest, ///< where to write the line
+    uint8_t row, ///< row of the dice face to write
+    uint8_t value ///< value shown by the dice face
 ) {
     memset(dest, '#', 14);
 
