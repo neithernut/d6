@@ -54,12 +54,12 @@
  * have the luxury of starting at an offset without wasting memory.
  */
 const uint64_t pips =
-    ((uint64_t) 0x010) << (1*9) |
-    ((uint64_t) 0x044) << (2*9) |
-    ((uint64_t) 0x054) << (3*9) |
-    ((uint64_t) 0x145) << (4*9) |
-    ((uint64_t) 0x155) << (5*9) |
-    ((uint64_t) 0x16D) << (6*9);
+    ((uint64_t) 0020) << (1*9) |
+    ((uint64_t) 0104) << (2*9) |
+    ((uint64_t) 0124) << (3*9) |
+    ((uint64_t) 0505) << (4*9) |
+    ((uint64_t) 0525) << (5*9) |
+    ((uint64_t) 0555) << (6*9);
 
 
 /**
