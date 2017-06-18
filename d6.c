@@ -24,9 +24,9 @@
 #include <alloca.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <fcntl.h>
+#include <sys/uio.h>
 #include <unistd.h>
 
 
@@ -72,33 +72,39 @@ const size_t dice_row_len = 16;
 
 
 /**
- * Write a horizontal line of pixels/characters for a dice face
+ * Variations of lines which occur in a dice
+ *
+ * A line contains up to three pips, each of which may be represented by one
+ * bit. Hence, eight differente variations of a line exist, enumerable via the
+ * three bits. However, only a subset of those lines do occur.
  */
-void
-set_row_pixels(
-    char* dest, ///< where to write the line
+char const* dice_parts[] = {
+    "##############  ",
+    "##  ##########  ",
+    "######  ######  ",
+    NULL,
+    "##########  ##  ",
+    "##  ######  ##  "
+};
+
+
+/**
+ * Get an iovec for a horizontal line of pixels/characters of a dice face
+ */
+struct iovec
+row_vec(
     uint8_t row, ///< row of the dice face to write
     uint8_t value ///< value shown by the dice face
 ) {
-    memset(dest, '#', 14);
+    struct iovec retval;
 
-    switch (row) {
-    case 1:
-    case 3:
-    case 5:
-        {
-            uint8_t current = (pips >> (value*9 + 3*(row/2)));
-            if (current & (1<<0))
-                memset(dest+(2*1), ' ', 2);
-            if (current & (1<<1))
-                memset(dest+(2*3), ' ', 2);
-            if (current & (1<<2))
-                memset(dest+(2*5), ' ', 2);
-        }
+    uint8_t part = 0;
+    if (row & 1)
+        part = (pips >> (value*9 + 3*(row/2))) & 7;
 
-    default:
-        break;
-    }
+    retval.iov_base = (void*) dice_parts[part];
+    retval.iov_len = dice_row_len;
+    return retval;
 };
 
 
@@ -118,15 +124,19 @@ int main(int argc, char* argv[]) {
         close(rand);
     }
 
-    // prepare buffer
-    const size_t row_len = dice_row_len*count;
-    char* buf = alloca(row_len*7);
-    memset(buf, ' ', row_len*7);
+    // prepare iovec
+    size_t const vec_count = 7 * (count + 1);
+    struct iovec* vecs = alloca(sizeof(struct iovec) * vec_count);
 
-    // make it rows
-    uint8_t row = 7;
-    while (row-- > 0)
-        *(buf + ((row+1)*row_len - 1)) = '\n';
+    // put line ends
+    {
+        uint8_t row = 7;
+        while (row-- > 0) {
+            struct iovec* line_end = vecs + (row * (count+1) + count);
+            line_end->iov_base = "\n";
+            line_end->iov_len = 1;
+        }
+    }
 
     // prepare
     for (unsigned int dice_num = 0; dice_num < count; ++dice_num) {
@@ -135,10 +145,10 @@ int main(int argc, char* argv[]) {
 
         uint8_t row = 7;
         while (row-- > 0)
-            set_row_pixels(buf + row_len*row + dice_row_len*dice_num, row, value);
+            vecs[row * (count+1) + dice_num] = row_vec(row, value);
     }
 
-    write(1, buf, row_len*7);
+    writev(1, vecs, vec_count);
 
     return 0;
 }
